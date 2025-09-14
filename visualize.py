@@ -357,13 +357,13 @@ class Visualizer():
                     measurement_plot = self.create_measurement_length_plot(measurement_name=m_name,
                                                                         verts=self.verts,
                                                                         color=measurement_colors[m_name])     
+                    fig.add_trace(measurement_plot)
                 elif self.measurement_types[m_name] == MeasurementType().CIRCUMFERENCE:
                     measurement_plot = self.create_measurement_circumference_plot(measurement_name=m_name,
                                                                                     verts=self.verts,
                                                                                     faces=self.faces,
                                                                                     color=measurement_colors[m_name])
-                
-                fig.add_trace(measurement_plot)
+                    fig.add_trace(measurement_plot)
                 
 
         fig.update_layout(scene_aspectmode='data',
@@ -374,7 +374,7 @@ class Visualizer():
         fig.show()
 
 
-def viz_smplx_joints(visualize_body=True,fig=None,show=True,title="SMPLX joints"):
+def viz_smplx_joints(visualize_body=True,fig=None,show=True,title="SMPLX joints") -> go.Figure:
     """
     Visualize smpl joints on the same plot.
     :param visualize_body: bool, whether to visualize the body or not.
@@ -454,12 +454,11 @@ def viz_smplx_joints(visualize_body=True,fig=None,show=True,title="SMPLX joints"
     
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
 
-def viz_smpl_joints(visualize_body=True,fig=None,show=True,title="SMPL joints"):
+def viz_smpl_joints(visualize_body=True,fig=None,show=True,title="SMPL joints") -> go.Figure:
     """
     Visualize smpl joints on the same plot.
     :param visualize_body: bool, whether to visualize the body or not.
@@ -537,13 +536,11 @@ def viz_smpl_joints(visualize_body=True,fig=None,show=True,title="SMPL joints"):
                         title=title,
                         )
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
                            
 
-def viz_face_segmentation(verts,faces,face_colors,
-                          title="Segmented body",name="mesh",show=True):
+def viz_face_segmentation(verts,faces,face_colors, title="Segmented body",name="mesh",show=True) -> go.Figure:
     """
     Visualize face segmentation defined in face_colors.
     :param verts: np.ndarray - (N,3) representing the vertices
@@ -572,12 +569,11 @@ def viz_face_segmentation(verts,faces,face_colors,
                         title=title)
     
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
 
-def viz_smpl_face_segmentation(fig=None, show=True, title="SMPL face segmentation"):
+def viz_smpl_face_segmentation(fig=None, show=True, title="SMPL face segmentation") -> go.Figure:
     body = smplx.SMPL("data/smpl",ext="pkl")
 
     with open("data/smpl/smpl_body_parts_2_faces.json","r") as f:
@@ -604,12 +600,11 @@ def viz_smpl_face_segmentation(fig=None, show=True, title="SMPL face segmentatio
     fig = viz_face_segmentation(verts,faces,face_colors,title=title,name="smpl",show=False)
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
 
-def viz_smplx_face_segmentation(fig=None,show=True,title="SMPLX face segmentation"):
+def viz_smplx_face_segmentation(fig=None,show=True,title="SMPLX face segmentation") -> go.Figure:
     """
     Visualize face segmentations for smplx.
     """
@@ -641,12 +636,11 @@ def viz_smplx_face_segmentation(fig=None,show=True,title="SMPLX face segmentatio
     fig = viz_face_segmentation(verts,faces,face_colors,title=title,name="smpl",show=False)
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
 
-def viz_point_segmentation(verts,point_segm,title="Segmented body",fig=None,show=True):
+def viz_point_segmentation(verts,point_segm,title="Segmented body",fig=None,show=True) -> go.Figure:
     """
     Visualze points and their segmentation defined in dict point_segm.
     :param verts: np.ndarray - (N,3) representing the vertices
@@ -680,7 +674,7 @@ def viz_point_segmentation(verts,point_segm,title="Segmented body",fig=None,show
     return fig
 
 
-def viz_smplx_point_segmentation(fig=None,show=True,title="SMPLX point segmentation"):
+def viz_smplx_point_segmentation(fig=None,show=True,title="SMPLX point segmentation") -> go.Figure:
     """
     Visualize point segmentations for smplx.
     """
@@ -692,12 +686,11 @@ def viz_smplx_point_segmentation(fig=None,show=True,title="SMPLX point segmentat
     fig = viz_point_segmentation(smpl_verts,point_segm,title=title,fig=fig,show=show)
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
 
-def viz_smpl_point_segmentation(fig=None,show=True,title="SMPL point segmentation"):
+def viz_smpl_point_segmentation(fig=None,show=True,title="SMPL point segmentation") -> go.Figure:
     """
     Visualize point segmentations for smpl.
     """
@@ -709,12 +702,12 @@ def viz_smpl_point_segmentation(fig=None,show=True,title="SMPL point segmentatio
     fig = viz_point_segmentation(smpl_verts,point_segm,title=title,fig=fig,show=show)
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+        
+    return fig
 
 
-def viz_landmarks(verts,landmark_dict,title="Visualize landmarks",fig=None,show=True,name="points"):
+def viz_landmarks(verts,landmark_dict,title="Visualize landmarks",fig=None,show=True,name="points") -> go.Figure:
     
     if isinstance(fig,type(None)):
         fig = go.Figure()
@@ -759,12 +752,11 @@ def viz_landmarks(verts,landmark_dict,title="Visualize landmarks",fig=None,show=
                     title=title)
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
     
 
-def viz_smpl_landmarks(fig=None,show=True,title="SMPL landmarks"):
+def viz_smpl_landmarks(fig=None,show=True,title="SMPL landmarks") -> go.Figure:
     """
     Visualize smpl landmarks.
     """
@@ -783,12 +775,11 @@ def viz_smpl_landmarks(fig=None,show=True,title="SMPL landmarks"):
                         name="smpl")
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
 
-def viz_smplx_landmarks(fig=None,show=True,title="SMPLX landmarks"):
+def viz_smplx_landmarks(fig=None,show=True,title="SMPLX landmarks") -> go.Figure:
     """
     Visualize smplx landmarks.
     """
@@ -807,9 +798,8 @@ def viz_smplx_landmarks(fig=None,show=True,title="SMPLX landmarks"):
                         name="smplx")
 
     if show:
-        fig.show()
-    else:
-        return fig
+        fig.show() 
+    return fig
 
     
 
@@ -859,12 +849,11 @@ if __name__ == "__main__":
         fig_smplx = viz_smplx_point_segmentation(fig=None,show=False,title=title)
 
 
-        for i in range(len(fig_smpl.data)):
-            fig.add_trace(fig_smpl.data[i],row=1,col=1)
-        for i in range(len(fig_smplx.data)):
-            fig.add_trace(fig_smplx.data[i],row=1,col=2)
-
-
+        for trace in fig_smpl.data:
+            fig.add_trace(trace, row=1, col=1)
+        for trace in fig_smplx.data:
+            fig.add_trace(trace, row=1, col=2)
+            
         fig.update_layout(fig_smpl.layout)
         fig.update_layout(scene2_aspectmode="data",
                           showlegend=False,
@@ -882,10 +871,10 @@ if __name__ == "__main__":
         fig_smpl = viz_smpl_landmarks(fig=None,show=False,title=title)
         fig_smplx = viz_smplx_landmarks(fig=None,show=False,title=title)
 
-        for i in range(len(fig_smpl.data)):
-            fig.add_trace(fig_smpl.data[i],row=1,col=1)
-        for i in range(len(fig_smplx.data)):
-            fig.add_trace(fig_smplx.data[i],row=1,col=2)
+        for i in fig_smpl.data:
+            fig.add_trace(fig_smpl.data,row=1,col=1)
+        for i in fig_smplx.data:
+            fig.add_trace(fig_smplx.data,row=1,col=2)
 
         
         fig.update_layout(fig_smpl.layout)

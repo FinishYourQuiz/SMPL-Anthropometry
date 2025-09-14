@@ -103,7 +103,7 @@ def filter_body_part_slices(slice_segments:np.ndarray,
 def point_segmentation_to_face_segmentation(
                 point_segmentation: dict,
                 faces: np.ndarray,
-                save_as: str = None):
+                save_as: str):
     """
     :param point_segmentation: dict - dict mapping body part to 
                                       all points belonging to it

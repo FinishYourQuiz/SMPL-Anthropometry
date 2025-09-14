@@ -64,10 +64,10 @@ class Measurer():
     '''
 
     def __init__(self):
-        self.verts = None
-        self.faces = None
-        self.joints = None
-        self.gender = None
+        self.verts = np.array([])
+        self.faces = np.array([])
+        self.joints = np.array([])
+        self.gender = 'None'
 
         self.measurements = {}
         self.height_normalized_measurements = {}
@@ -75,10 +75,36 @@ class Measurer():
         self.height_normalized_labeled_measurements = {}
         self.labels2names = {}
 
-    def from_verts(self):
-        pass
+        self.model_type = "smpl"
+        self.body_model_root = "data"
+        self.body_model_path = os.path.join(self.body_model_root, 
+                                            self.model_type)
 
-    def from_body_model(self):
+        self.faces = smplx.SMPL(self.body_model_path, ext="pkl").faces
+        face_segmentation_path = os.path.join(self.body_model_path,
+                                              f"{self.model_type}_body_parts_2_faces.json")
+        self.face_segmentation = load_face_segmentation(face_segmentation_path)
+
+        self.landmarks = SMPL_LANDMARK_INDICES
+        self.measurement_types = MEASUREMENT_TYPES
+        self.length_definitions = SMPLMeasurementDefinitions().LENGTHS
+        self.circumf_definitions = SMPLMeasurementDefinitions().CIRCUMFERENCES
+        self.circumf_2_bodypart = SMPLMeasurementDefinitions().CIRCUMFERENCE_TO_BODYPARTS
+        self.all_possible_measurements = SMPLMeasurementDefinitions().possible_measurements
+
+        self.joint2ind = SMPL_JOINT2IND
+        self.num_joints = SMPL_NUM_JOINTS
+
+        self.num_points = 6890
+
+
+    def from_verts(self,
+                   verts: torch.Tensor):
+        pass 
+
+    def from_body_model(self,
+                        gender: str,
+                        shape: torch.Tensor):
         pass
 
     def measure(self, 
@@ -91,9 +117,9 @@ class Measurer():
         '''
 
         for m_name in measurement_names:
-            if m_name not in self.all_possible_measurements:
-                print(f"Measurement {m_name} not defined.")
-                pass
+            # if m_name not in self.all_possible_measurements:
+            #     print(f"Measurement {m_name} not defined.")
+            #     pass
 
             if m_name in self.measurements:
                 pass
@@ -263,14 +289,13 @@ class Measurer():
 
         # TODO: create default model if not defined
         # if self.verts is None:
-        #     print("Model has not been defined. \
-        #           Visualizing on default male model")
-        #     model = create_model(self.smpl_path, "MALE", num_coefs=10)
-        #     shape = torch.zeros((1, 10), dtype=torch.float32)
-        #     model_output = set_shape(model, shape)
+        #     print("Model has not been defined.")
+        #     # model = create_model(self.smpl_path, "MALE", num_coefs=10)
+        #     # shape = torch.zeros((1, 10), dtype=torch.float32)
+        #     # model_output = set_shape(model, shape)
             
-        #     verts = model_output.vertices.detach().cpu().numpy().squeeze()
-        #     faces = model.faces.squeeze()
+        #     # verts = model_output.vertices.detach().cpu().numpy().squeeze()
+        #     # faces = model.faces.squeeze()
         # else:
         #     verts = self.verts
         #     faces = self.faces 
@@ -280,7 +305,7 @@ class Measurer():
 
         if landmark_names == []:
             landmark_names = list(self.landmarks.keys())
-
+        
         vizz = Visualizer(verts=self.verts,
                         faces=self.faces,
                         joints=self.joints,
@@ -339,7 +364,7 @@ class MeasureSMPL(Measurer):
         self.num_points = 6890
 
     def from_verts(self,
-                   verts: torch.tensor):
+                   verts: torch.Tensor):
         '''
         Construct body model from only vertices.
         :param verts: torch.tensor (6890,3) of SMPL vertices
@@ -359,7 +384,7 @@ class MeasureSMPL(Measurer):
 
     def from_body_model(self,
                         gender: str,
-                        shape: torch.tensor):
+                        shape: torch.Tensor):
         '''
         Construct body model from given gender and shape params 
         of SMPl model.
@@ -415,7 +440,7 @@ class MeasureSMPLX(Measurer):
         self.num_points = 10475
 
     def from_verts(self,
-                   verts: torch.tensor):
+                   verts: torch.Tensor):
         '''
         Construct body model from only vertices.
         :param verts: torch.tensor (10475,3) of SMPLX vertices
@@ -435,7 +460,7 @@ class MeasureSMPLX(Measurer):
 
     def from_body_model(self,
                         gender: str,
-                        shape: torch.tensor):
+                        shape: torch.Tensor):
         '''
         Construct body model from given gender and shape params 
         of SMPl model.

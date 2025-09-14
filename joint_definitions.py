@@ -1,6 +1,10 @@
 import smplx
 import torch
 import os
+from typing import Literal, cast
+
+ModelType = Literal["smpl", "smplh", "smplx", "mano", "flame"]
+Gender = Literal["neutral", "male", "female"]
 
 #from https://meshcapade.wiki/SMPL
 
@@ -100,7 +104,7 @@ SMPLX_IND2JOINT = {
 
 SMPLX_JOINT2IND = {name:ind for ind,name in SMPLX_IND2JOINT.items()}
 
-def get_joint_regressor(body_model_type, body_model_root, gender="MALE", num_thetas=24):
+def get_joint_regressor(body_model_type, body_model_root, gender="MALE", num_thetas=24) -> torch.Tensor:
     '''
     Extract joint regressor from SMPL body model
     :param body_model_type: str of body model type (smpl or smplx, etc.)
@@ -118,6 +122,38 @@ def get_joint_regressor(body_model_type, body_model_root, gender="MALE", num_the
                         gender=gender, 
                         use_face_contour=False,
                         num_betas=10,
-                        body_pose=torch.zeros((1, num_thetas-1 * 3)),
+                        body_pose=torch.zeros((1, (num_thetas-1) * 3)),
                         ext='pkl')
-    return model.J_regressor
+    body_model_type = body_model_type.lower()
+    gender = gender.lower()
+
+    # Prefer NPZ for SMPL-X per upstream; PKL for others. Fallback to PKL if NPZ unavailable.
+    create_kwargs = dict(gender=gender, num_betas=10)
+    if body_model_type == "smplx":
+        try:
+            model = smplx.create(
+                model_path=body_model_root,
+                model_type=body_model_type,
+                ext="npz",  # SMPL-X default per docs
+                **create_kwargs,
+            )
+        except (AssertionError, FileNotFoundError):
+            model = smplx.create(
+                model_path=body_model_root,
+                model_type=body_model_type,
+                ext="pkl",
+                **create_kwargs,
+            )
+    else:
+        model = smplx.create(
+            model_path=body_model_root,
+            model_type=body_model_type,
+            ext="pkl",
+            **create_kwargs,
+        )
+
+    # Ensure Torch tensor for static type checkers
+    J = cast(torch.Tensor, getattr(model, "J_regressor"))
+    if hasattr(J, "to_dense"):  # rare: if stored as sparse
+        J = J.to_dense()
+    return J.detach().clone()
